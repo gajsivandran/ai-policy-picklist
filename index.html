@@ -143,6 +143,15 @@ section.step:last-of-type{border-bottom:none}
 .goal-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .xref{font-size:14.5px;color:var(--soft);font-style:italic}
 
+.goal-band{font-size:13px;color:var(--soft);margin:8px 0 0;line-height:1.4}
+.goal-band.clash{color:var(--flag)}
+.except{
+  margin:14px 18px 0;padding:11px 13px;background:var(--accent-soft);
+  border-left:2px solid var(--accent);border-radius:0 3px 3px 0;
+}
+.except p{margin:0 0 9px;font-family:var(--serif);font-size:14.5px;line-height:1.5}
+.except h5{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--accent);margin:0 0 7px}
+
 /* ---------- buttons ---------- */
 button.act{
   font-family:var(--sans);font-size:13.5px;font-weight:500;cursor:pointer;
@@ -184,6 +193,12 @@ button.act[disabled]{opacity:.45;cursor:default}
 .xbtn:hover{color:var(--flag)}
 .xbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .draft-acts{display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--rule);flex-wrap:wrap}
+.warn button{
+  background:none;border:0;padding:0;margin:0;cursor:pointer;color:var(--flag);
+  font-family:var(--sans);font-size:13.5px;text-decoration:underline;text-underline-offset:2px;
+}
+.warn button:hover{opacity:.75}
+.warn button:focus-visible{outline:2px solid var(--flag);outline-offset:2px;border-radius:2px}
 .warn{
   margin:14px 18px 0;padding:10px 12px;background:var(--flag-soft);
   border-left:2px solid var(--flag);font-size:13.5px;color:var(--ink);line-height:1.45;border-radius:0 3px 3px 0;
@@ -191,7 +206,7 @@ button.act[disabled]{opacity:.45;cursor:default}
 mark.ph{background:var(--flag-soft);color:var(--flag);padding:0 3px;border-radius:2px;font-style:italic}
 
 /* ---------- outcomes ---------- */
-.outcomes{margin:0 0 26px 40px;max-width:64ch}
+.outcomes{margin:0 0 26px 40px;max-width:64ch;border-left:2px solid var(--accent-soft);padding-left:16px}
 @media (max-width:560px){.outcomes{margin-left:0}}
 .outcomes > p.ask{font-family:var(--serif);font-size:16.5px;line-height:1.5;margin:0 0 10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
@@ -313,6 +328,7 @@ footer.end a{color:var(--accent)}
 <aside class="draft">
   <div class="draft-inner">
     <h2>Your draft <span id="dcount"></span></h2>
+    <div class="except" id="except" hidden></div>
     <div class="warn" id="warn" hidden></div>
     <div class="draft-body" id="dbody"></div>
     <div class="draft-acts">
@@ -373,6 +389,33 @@ function sub(text){
   if(o) t = t.replace(/\[your course-specific cognitive outcomes\]/g, o);
   return t;
 }
+const RX = {
+  subst: /(syntax help|debug|reformat|geoprocessing|format conversion|projection|library function|locate (relevant )?sources|source discovery|identify potential sources|identifying relevant sources|summarize complex passages|explain(ing)? (unfamiliar )?(concepts|code)|concept clarification|methodological options|brainstorm|ideation|routine spatial procedures|computation|search terms|outlines)/i,
+  deny: /(may not be used|you may not use|must be your own|must be yours|not permitted|before consulting AI)/i,
+  perm: /(may be used|you may use|AI may help|may consult AI)/i,
+  after: /\b(after submission|after you submit|after completing|after the assignment is submitted|after your draft is complete)\b/i
+};
+// Which course-level statements a goal sits comfortably under, derived from its own
+// policy text: most goals restrict AI outright (Levels 1-2); goals that permit
+// substantial AI use as a prerequisite fit Level 3; Section G is the Level 5 case.
+function band(secId, text){
+  if(secId === "G") return [5];
+  if(!RX.deny.test(text)) return [1,2];
+  for(const s of text.split(/(?<=\.)\s+/)){
+    if(RX.perm.test(s) && !RX.deny.test(s) && !RX.after.test(s) && RX.subst.test(s)) return [3];
+  }
+  return [1,2];
+}
+const bandName = b => b.length > 1 ? "Level "+b[0]+" or "+b[1] : "Level "+b[0];
+
+function clashOf(it){
+  if(state.level === null) return null;
+  const r = goalAt(it); if(!r || !r.goal.text) return null;
+  const b = band(r.sec.id, r.goal.text), L = state.level + 1;
+  if(b.includes(L)) return null;
+  return {dir: Math.max(...b) < L ? "stricter" : "looser", band:b, level:L, task:r.task};
+}
+
 function outcomePhrase(name){
   const clean = name.replace(/\s*\([^)]*\)/g,"").trim();
   return clean.charAt(0).toLowerCase() + clean.slice(1);
@@ -498,6 +541,7 @@ function renderKey(){
               + '<p class="goal-q">'+esc(g.goal)+'</p>'
               + (g.bloom ? '<p class="goal-bloom">Bloom&rsquo;s: '+esc(g.bloom)+'</p>' : '')
               + '<div class="policy">'+markup(g.text)+'</div>'
+              + bandNote(sec.id, g.text, it)
               + '<div class="goal-acts">'
                 + '<button class="act '+(has(it)?"on":"primary")+'" data-add="'+id+'">'
                   + (has(it)?"In your draft":"Add to draft")+'</button>'
@@ -512,6 +556,30 @@ function renderKey(){
   document.getElementById("count").textContent = query ? shown+" of "+DATA.total+" goals" : DATA.total+" goals";
 }
 
+function bandNote(secId, text, it){
+  const b = band(secId, text), c = clashOf(it);
+  if(!c) return '<p class="goal-band">Consistent with a '+bandName(b)+' course statement.</p>';
+  const verb = c.dir === "stricter" ? "Restricts AI more than" : "Permits more AI than";
+  return '<p class="goal-band clash">'+verb+' your Level '+c.level
+       + ' statement. Add it and name it as an exception in the syllabus.</p>';
+}
+
+function exceptions(){
+  const strict = [], loose = [];
+  state.items.forEach(it=>{
+    const c = clashOf(it); if(!c) return;
+    const label = c.task.title.charAt(0).toLowerCase()+c.task.title.slice(1);
+    const bucket = c.dir === "stricter" ? strict : loose;
+    if(!bucket.includes(label)) bucket.push(label);
+  });
+  if(!strict.length && !loose.length) return "";
+  const list = a => a.length === 1 ? a[0] : a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+  const clauses = [];
+  if(strict.length) clauses.push("except "+list(strict)+", which restrict AI use further as set out in their instructions");
+  if(loose.length) clauses.push((strict.length?"and ":"except ")+list(loose)+", which permit broader AI use as set out in their instructions");
+  return "Assessments in this course are at AIAS Level "+(state.level+1)+", "+clauses.join(", ")+".";
+}
+
 /* ---------- draft ---------- */
 function draftText(){
   const L = [];
@@ -522,6 +590,8 @@ function draftText(){
     L.push("Course-level statement for the syllabus", "-".repeat(40), lv.label, "");
     lv.body.forEach(p=>L.push(sub(p), ""));
   }
+  const ex = exceptions();
+  if(ex) L.push("Exceptions to state in the syllabus", "-".repeat(40), ex, "");
   if(state.items.length){
     L.push("Assignment-level language", "-".repeat(40), "");
     state.items.forEach(it=>{
@@ -561,12 +631,32 @@ function renderDraft(){
   if(!n) html = '<p class="draft-empty">Nothing selected yet. Start with a course-level statement, then add language for one assignment.</p>';
   body.innerHTML = html;
 
+  const exBox = document.getElementById("except");
+  const ex = exceptions();
+  if(ex){
+    exBox.hidden = false;
+    exBox.innerHTML = '<h5>Exceptions to state in your syllabus</h5><p>'+esc(ex)+'</p>'
+      + '<button class="act" id="copyex">Copy this sentence</button>';
+  } else exBox.hidden = true;
+
   const warn = document.getElementById("warn");
   const t = draftText();
+  const FIX = {
+    "[field]": {label:"Name your field", go:"disc"},
+    "[discipline]": {label:"Name your field", go:"disc"},
+    "[your course-specific cognitive outcomes]": {label:"Choose your cognitive outcomes", go:"outcomes"}
+  };
   const ph = [...new Set(t.match(/\[[^\]\n]+\]/g) || [])];
   if(ph.length){
+    const seen = new Set(), bits = [];
+    ph.forEach(p=>{
+      const f = FIX[p];
+      if(f){ if(seen.has(f.label)) return; seen.add(f.label);
+             bits.push('<button data-goto="'+f.go+'">'+f.label+'</button>'); }
+      else bits.push(esc(p));
+    });
     warn.hidden = false;
-    warn.textContent = "Still to fill in: "+ph.join("  ");
+    warn.innerHTML = "Still to fill in: " + bits.join(", ");
   } else warn.hidden = true;
 
   const empty = !n;
@@ -578,6 +668,22 @@ document.addEventListener("click", e=>{
   const t = e.target.closest("button");
   if(!t) return;
 
+  if(t.dataset.goto){
+    const smooth = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    if(t.dataset.goto === "disc"){
+      const el = document.getElementById("f-disc");
+      el.scrollIntoView({block:"center", behavior:smooth});
+      setTimeout(()=>el.focus({preventScroll:true}), 350);
+    } else {
+      document.querySelector(".outcomes").scrollIntoView({block:"center", behavior:smooth});
+      const p = document.getElementById("picker");
+      if(!p.classList.contains("open")){
+        p.classList.add("open");
+        document.getElementById("pickout").textContent = "Done choosing";
+      }
+    }
+    return;
+  }
   if(t.id==="pickout"){
     const p = document.getElementById("picker");
     p.classList.toggle("open");
@@ -613,7 +719,7 @@ document.addEventListener("click", e=>{
   if(t.dataset.use !== undefined){
     const i = +t.dataset.use;
     state.level = (state.level===i) ? null : i;
-    save(); renderLevels(); renderDraft();
+    save(); renderLevels(); renderKey(); renderDraft();
     if(state.level!==null){ document.querySelectorAll(".level")[i].classList.add("open"); toast("Syllabus statement added"); }
     return;
   }
@@ -648,6 +754,7 @@ document.addEventListener("click", e=>{
   if(t.dataset.rmlevel !== undefined){
     state.level = null; save(); renderLevels(); renderDraft(); return;
   }
+  if(t.id==="copyex"){ copy(exceptions(), "Sentence copied"); return; }
   if(t.id==="copyall"){ copy(draftText(), "Draft copied"); return; }
   if(t.id==="download"){
     const name = (state.course.trim()||"course").replace(/[^\w\-]+/g,"-").toLowerCase();
