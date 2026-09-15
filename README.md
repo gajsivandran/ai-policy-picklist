@@ -32,8 +32,11 @@ That URL is stable, free, and yours. Every later edit you push is live in under 
 - **Step 2** works like a key: task type, then cognitive goal, then the policy language.
   Search covers task names, goals, and the policy text itself.
 - The **field** box at the top fills `[field]` and `[discipline]` throughout.
-  `[your course-specific cognitive outcomes]` stays highlighted, because only the
-  instructor can write that.
+- **Cognitive outcomes** fill `[your course-specific cognitive outcomes]`. The options
+  are the cognitive goals already named in the pick-list, so they stay in the
+  document's own language; there is also a box for writing your own. If someone has
+  already picked assignment language, one button pulls the outcomes from that.
+  Anything still unfilled stays highlighted and is listed in a banner on the draft.
 - **Your draft** collects every selection. Copy all, or download a `.txt`.
 
 ## Privacy and limits
