@@ -37,7 +37,17 @@ That URL is stable, free, and yours. Every later edit you push is live in under 
   document's own language; there is also a box for writing your own. If someone has
   already picked assignment language, one button pulls the outcomes from that.
   Anything still unfilled stays highlighted and is listed in a banner on the draft.
+- Each goal carries a note saying which course-level statements it sits under. If it
+  conflicts with the statement you picked, the note turns amber and says which way.
+- When your selections depart from your course statement, the draft writes the
+  exception sentence for the syllabus and puts it in the export.
 - **Your draft** collects every selection. Copy all, or download a `.txt`.
+
+The band a goal belongs to is derived from its own policy text, following the note in
+Section 2 of the pick-list: goals that restrict AI outright sit at Levels 1-2, goals
+that permit substantial AI use as a prerequisite sit at Level 3, and Section G is the
+Level 5 case. It is a rule of thumb, not a ruling. Nothing is ever blocked, because
+combining levels within one course is expected.
 
 ## Privacy and limits
 
