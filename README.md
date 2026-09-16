@@ -1,4 +1,4 @@
-# AI policy language for College of the Environment courses
+# Communicating AI use in your course
 
 A single-page tool that turns the AI Policy Pick-List into something a faculty member
 can work through in five minutes. Pick a course-level statement, pick language for
@@ -28,26 +28,32 @@ That URL is stable, free, and yours. Every later edit you push is live in under 
 
 ## What it does
 
-- **Step 1** picks one of the five AIAS course-level statements for the syllabus.
-- **Step 2** works like a key: task type, then cognitive goal, then the policy language.
-  Search covers task names, goals, and the policy text itself.
-- The **field** box at the top fills `[field]` and `[discipline]` throughout.
-- **Cognitive outcomes** fill `[your course-specific cognitive outcomes]`. The options
-  are the cognitive goals already named in the pick-list, so they stay in the
-  document's own language; there is also a box for writing your own. If someone has
-  already picked assignment language, one button pulls the outcomes from that.
-  Anything still unfilled stays highlighted and is listed in a banner on the draft.
-- Each goal carries a note saying which course-level statements it sits under. If it
-  conflicts with the statement you picked, the note turns amber and says which way.
-- When your selections depart from your course statement, the draft writes the
-  exception sentence for the syllabus and puts it in the export.
-- **Your draft** collects every selection. Copy all, or download a `.txt`.
+Three steps, shown as a flow diagram at the top of the page:
 
-The band a goal belongs to is derived from its own policy text, following the note in
-Section 2 of the pick-list: goals that restrict AI outright sit at Levels 1-2, goals
-that permit substantial AI use as a prerequisite sit at Level 3, and Section G is the
-Level 5 case. It is a rule of thumb, not a ruling. Nothing is ever blocked, because
-combining levels within one course is expected.
+1. **Set your comfort level.** Five course-level options, from no AI at all through open
+   exploration, drawn from the AI Assessment Scale.
+2. **Pick an assignment.** Find the kind of work in the collapsed A-G list, then the
+   skill you want students to develop, then take the sample wording.
+3. **Copy and edit.** Selections collect in a draft panel. Copy all, or download a `.txt`.
+
+Everything is framed as sample language to be edited, not policy to be pasted. Saying
+no AI at all is presented as a legitimate position that still needs spelling out for
+students.
+
+Other behaviour:
+
+- The **field** box fills `[field]` and `[discipline]` throughout.
+- **Skills** fill `[list the skills here]` and populate themselves from the assignments
+  picked in step 2. Remove one and it stays removed; add your own and it survives later
+  changes. Anything unfilled is highlighted, and the draft banner links to the control
+  that fixes it.
+- The word "cognitive" appears nowhere in the document or the app. Goal names and policy
+  text are written in plain language for students; the faculty guidance says "target
+  skill" rather than "cognitive target".
+- Each entry says which course-level statements it sits under. If it conflicts with the
+  statement chosen, the note turns amber and says which way.
+- When selections depart from the course statement, the draft writes the exception
+  sentence for the syllabus and puts it in the export.
 
 ## Privacy and limits
 
