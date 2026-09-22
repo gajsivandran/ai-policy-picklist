@@ -36,6 +36,9 @@ Three steps, shown as a flow diagram at the top of the page:
    skill you want students to develop, then take the sample wording.
 3. **Copy and edit.** Selections collect in a draft panel. Copy all, or download a `.txt`.
 
+A red TRIAL / NOT POLICY banner sits above everything, stating that nothing here has
+been adopted by the College or the University and giving a contact address for comments.
+
 Everything is framed as sample language to be edited, not policy to be pasted. Saying
 no AI at all is presented as a legitimate position that still needs spelling out for
 students.
