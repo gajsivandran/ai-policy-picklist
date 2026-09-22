@@ -35,6 +35,31 @@ body{
 }
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
 
+/* ---------- trial banner ---------- */
+.trial{background:#B3261E;color:#FFFFFF}
+.trial-in{
+  max-width:1180px;margin:0 auto;padding:15px 24px 16px;
+  display:flex;gap:10px 20px;align-items:baseline;flex-wrap:wrap;
+}
+.trial-tag{
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  letter-spacing:.12em;flex:none;white-space:nowrap;
+}
+.trial-txt{font-family:var(--sans);font-size:15px;line-height:1.45;max-width:86ch}
+.trial a{color:#FFFFFF;text-decoration:underline;text-underline-offset:2px}
+.trial a:hover{color:#FFD9D4}
+.trial a:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px;border-radius:2px}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .trial{background:#7A1810;color:#FFE8E4}
+  :root:not([data-theme="light"]) .trial a{color:#FFE8E4}
+  :root:not([data-theme="light"]) .trial a:hover{color:#FFC9C0}
+  :root:not([data-theme="light"]) .trial a:focus-visible{outline-color:#FFE8E4}
+}
+:root[data-theme="dark"] .trial{background:#7A1810;color:#FFE8E4}
+:root[data-theme="dark"] .trial a{color:#FFE8E4}
+:root[data-theme="dark"] .trial a:hover{color:#FFC9C0}
+:root[data-theme="dark"] .trial a:focus-visible{outline-color:#FFE8E4}
+
 /* ---------- masthead ---------- */
 header.top{padding:52px 0 28px;border-bottom:1px solid var(--rule)}
 header.top h1{
@@ -272,6 +297,13 @@ footer.end a{color:var(--accent)}
 </style>
 </head>
 <body>
+<div class="trial" role="note">
+  <div class="trial-in">
+    <span class="trial-tag">TRIAL &mdash; NOT POLICY</span>
+    <span class="trial-txt">Nothing here has been adopted by the College or the University. This is a framework to help you start thinking about AI guidance, and sample language to edit heavily. Comments and questions: <a href="mailto:gajs@uw.edu">gajs@uw.edu</a></span>
+  </div>
+</div>
+
 <div class="wrap">
 
 <header class="top">
